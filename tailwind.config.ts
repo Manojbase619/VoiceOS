@@ -6,12 +6,11 @@ export default {
   theme: {
     extend: {
       borderRadius: {
-        lg: ".5625rem", /* 9px */
-        md: ".375rem", /* 6px */
-        sm: ".1875rem", /* 3px */
+        lg: ".5625rem",
+        md: ".375rem",
+        sm: ".1875rem",
       },
       colors: {
-        // Flat / base colors (regular buttons)
         background: "hsl(var(--background) / <alpha-value>)",
         foreground: "hsl(var(--foreground) / <alpha-value>)",
         border: "hsl(var(--border) / <alpha-value>)",
@@ -73,19 +72,26 @@ export default {
         "sidebar-accent": {
           DEFAULT: "hsl(var(--sidebar-accent) / <alpha-value>)",
           foreground: "hsl(var(--sidebar-accent-foreground) / <alpha-value>)",
-          border: "var(--sidebar-accent-border)"
+          border: "var(--sidebar-accent-border)",
         },
         status: {
-          online: "rgb(34 197 94)",
+          online: "rgb(0 255 136)",
           away: "rgb(245 158 11)",
           busy: "rgb(239 68 68)",
-          offline: "rgb(156 163 175)",
+          offline: "rgb(100 116 139)",
+        },
+        neon: {
+          cyan: "#00d4ff",
+          purple: "#8b5cf6",
+          green: "#00ff88",
+          orange: "#ff6b35",
+          pink: "#ff0080",
         },
       },
       fontFamily: {
-        sans: ["var(--font-sans)"],
+        sans: ["Oxanium", "Space Grotesk", "var(--font-sans)", "sans-serif"],
         serif: ["var(--font-serif)"],
-        mono: ["var(--font-mono)"],
+        mono: ["JetBrains Mono", "Fira Code", "var(--font-mono)", "monospace"],
       },
       keyframes: {
         "accordion-down": {
@@ -96,10 +102,67 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "pulse-glow": {
+          "0%, 100%": { boxShadow: "0 0 20px rgba(0, 212, 255, 0.3)" },
+          "50%": { boxShadow: "0 0 60px rgba(0, 212, 255, 0.8), 0 0 120px rgba(0, 212, 255, 0.3)" },
+        },
+        "waveform": {
+          "0%, 100%": { scaleY: "0.3" },
+          "50%": { scaleY: "1" },
+        },
+        "particle-rise": {
+          "0%": { transform: "translateY(0) scale(1)", opacity: "0.8" },
+          "100%": { transform: "translateY(-60px) scale(0.2)", opacity: "0" },
+        },
+        "energy-ring": {
+          "0%": { transform: "scale(1)", opacity: "0.6" },
+          "100%": { transform: "scale(2.5)", opacity: "0" },
+        },
+        "data-flow": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(200%)" },
+        },
+        "hologram": {
+          "0%": { opacity: "0", transform: "scaleY(0.8) translateY(10px)", filter: "blur(4px)" },
+          "100%": { opacity: "1", transform: "scaleY(1) translateY(0)", filter: "blur(0)" },
+        },
+        "neon-flicker": {
+          "0%, 100%": { opacity: "1" },
+          "92%": { opacity: "1" },
+          "93%": { opacity: "0.4" },
+          "94%": { opacity: "1" },
+          "96%": { opacity: "0.6" },
+          "97%": { opacity: "1" },
+        },
+        "spin-slow": {
+          from: { transform: "rotate(0deg)" },
+          to: { transform: "rotate(360deg)" },
+        },
+        "float-up": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-12px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "pulse-glow": "pulse-glow 2s ease-in-out infinite",
+        "waveform": "waveform 0.5s ease-in-out infinite alternate",
+        "particle-rise": "particle-rise 1.5s ease-out forwards",
+        "energy-ring": "energy-ring 1s ease-out forwards",
+        "data-flow": "data-flow 2s linear infinite",
+        "hologram": "hologram 0.4s ease-out forwards",
+        "neon-flicker": "neon-flicker 4s linear infinite",
+        "spin-slow": "spin-slow 20s linear infinite",
+        "float-up": "float-up 6s ease-in-out infinite",
+      },
+      backgroundImage: {
+        "grid-cyber": "linear-gradient(rgba(0,212,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.05) 1px, transparent 1px)",
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      },
+      backgroundSize: {
+        "grid": "40px 40px",
       },
     },
   },
