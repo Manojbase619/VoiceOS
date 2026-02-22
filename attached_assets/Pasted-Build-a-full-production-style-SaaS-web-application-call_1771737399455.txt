@@ -1,0 +1,275 @@
+Build a full production-style SaaS web application called:
+
+“Basethesis VoiceOS”
+
+This is an AI-powered Intent Capture + Voice Agent Generation Platform built on UltraVox.
+
+This must feel like a futuristic AI Operating System from a sci-fi Hollywood film.
+
+------------------------------------------------------------
+
+AUTHENTICATION MODULE:
+
+Users must be able to sign up and log in using:
+
+• Mobile Number (with country code dropdown)
+• Email ID
+
+IMPORTANT:
+No OTP verification required (POC Mode)
+
+Allow direct login/signup using:
+Mobile Number + Email ID combination
+
+Store securely in Supabase or PostgreSQL.
+
+After login → Redirect to LIVE Dashboard.
+
+------------------------------------------------------------
+
+LIVE DASHBOARD:
+
+Create a real-time interactive dashboard with:
+
+• Active Voice Sessions
+• Generated AI Agents
+• Call Duration Analytics
+• Phone Numbers Logged In
+• Intent Captured Logs
+• Agent Type Distribution
+• Real-time Call Usage Timer
+• Daily Usage Charts
+• Session History Timeline
+• Agent Creation Timeline
+• System Usage Heatmap
+
+Each widget must exist as a floating 3D card in space.
+
+------------------------------------------------------------
+
+AGENT BUILDER:
+
+User can type:
+
+"I need a loan recovery agent"
+"I need an insurance follow up agent"
+"I need a police enquiry agent"
+"I need an education loan agent"
+
+System must:
+
+1. Capture intent
+2. Convert to structured metadata
+3. Generate UltraVox-ready system prompt
+
+Display:
+
+• Agent Name
+• Personality
+• Tone
+• Domain Knowledge
+• Objective
+• Risk Sensitivity
+• Emotional Calibration
+
+Output Format:
+
+{
+ "agent_name": "",
+ "communication_style": "",
+ "domain_context": "",
+ "objective": "",
+ "tone": "",
+ "conversation_rules": [],
+ "risk_flags": [],
+ "closing_goal": ""
+}
+
+------------------------------------------------------------
+
+VOICE SESSION CONTROL:
+
+Allow:
+• Start Call
+• End Call
+
+Apply:
+10 minute session cap per phone number
+
+If exceeded:
+Automatically terminate call
+
+Maintain:
+• Session Logs
+• Call Analytics
+• Usage Summary
+
+------------------------------------------------------------
+
+ADMIN PANEL:
+
+Admin must see:
+
+• Total Users
+• Phone Number Usage
+• Session Duration
+• Total Calls Made
+• Intent Types Used
+• Agent Categories Used
+• Session Drop-offs
+
+Allow:
+CSV Export
+
+------------------------------------------------------------
+
+HOLLYWOOD-GRADE 3D UI SYSTEM:
+
+This must NOT feel like a normal SaaS dashboard.
+
+GLOBAL UI MUST INCLUDE:
+
+• Volumetric lighting
+• Depth blur
+• Glassmorphism
+• Neon reflections
+• Metallic gradients
+• Dynamic shadows
+• Ambient glow
+• Floating holographic cards
+
+------------------------------------------------------------
+
+3D ENVIRONMENT (Three.js):
+
+Create real-time 3D background with:
+
+• Floating holographic grid floor
+• Neural network connection lines
+• Moving particle fog
+• AI pulse waves
+• Dynamic light beams
+• Ambient floating orbs
+
+When user scrolls:
+Camera slightly pans in 3D space (Parallax)
+
+When user hovers:
+Cards tilt in perspective
+
+------------------------------------------------------------
+
+VOICE REACTIVE UI:
+
+UI must react to:
+
+• Microphone input
+• Call activity
+• Agent speech
+
+Implement:
+
+• Audio waveform rings
+• Voice amplitude → UI glow
+• Sound-based particle bursts
+• Speaking agent → pulsing halo
+• Voice ripple distortions across UI
+
+------------------------------------------------------------
+
+CURSOR SYSTEM:
+
+Replace default cursor with AI Cursor:
+
+Include:
+
+• Energy core
+• Outer glow ring
+• Particle trail
+• Refraction distortion
+
+Idle:
+Soft breathing glow
+
+Hover:
+Magnetic snap + expansion
+
+During voice session:
+Pulse with waveform sync
+
+During call:
+Emit audio-reactive shockwaves
+
+Cursor trail dissolves like plasma smoke.
+
+------------------------------------------------------------
+
+CARD ANIMATIONS:
+
+On Load:
+Rise from depth (Z-axis)
+Rotate slightly and settle
+
+On Hover:
+Tilt toward cursor
+Neon edge glow
+Internal light sweep
+
+On Click:
+Shockwave ripple
+
+------------------------------------------------------------
+
+TRANSITIONS:
+
+Page change:
+Cinematic fade + zoom
+
+Modal open:
+Depth blur background
+Floating forward card
+
+Agent Generated:
+Hologram materialization
+
+Call Start:
+Radial energy wave
+
+Call End:
+UI dims smoothly
+
+------------------------------------------------------------
+
+TECH STACK:
+
+Frontend:
+Next.js + Tailwind
+
+Animation:
+Framer Motion
+GSAP
+React Spring
+
+3D:
+Three.js
+WebGL Shaders
+
+Backend:
+Node.js + Supabase
+
+Realtime:
+WebSockets
+
+Deploy:
+Vercel Ready
+
+Maintain:
+60 FPS performance
+Lazy load 3D assets
+
+------------------------------------------------------------
+
+FINAL GOAL:
+
+User must feel like they are controlling
+a living AI Command Center inside a cinematic system.
