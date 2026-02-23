@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import {
   pgTable,
   text,
@@ -9,7 +10,9 @@ import {
 // ================= USERS =================
 
 export const users = pgTable("users", {
-  id: text("id").primaryKey(),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
 
   email: text("email").notNull(),
 
@@ -26,7 +29,9 @@ export const users = pgTable("users", {
 // ================= AGENTS =================
 
 export const agents = pgTable("agents", {
-  id: text("id").primaryKey(),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
 
   userId: text("user_id").notNull(),
 
