@@ -34,14 +34,12 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         return res.json({ user: existing });
       }
 
-      const [user] = await db.insert(users)
-        .values({
-          id: crypto.randomUUID(),
-          email: email,
-          mobile: mobile,
-          countryCode: countryCode,
-        })
-        .returning();
+      const [user] = await db.insert(users).values({
+        id: crypto.randomUUID(),
+        email: String(email),
+        mobile: String(mobile),
+        countryCode: String(countryCode),
+      }).returning();
 
       return res.json({ user });
 
