@@ -9,7 +9,11 @@ const httpServer = createServer(app);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Railway healthcheck must pass on GET /
+// Railway internal healthcheck
+app.get("/health", (_, res) => {
+  res.status(200).send("OK");
+});
+
 app.get("/", (_, res) => {
   res.status(200).send("OK");
 });
