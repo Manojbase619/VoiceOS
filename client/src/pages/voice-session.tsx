@@ -5,20 +5,21 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { WaveformVisualizer } from "@/components/waveform-visualizer";
-import type { Agent, VoiceSession } from "@shared/schema";
-import { Phone, PhoneOff, Mic, Clock, AlertTriangle, Radio, Zap } from "lucide-react";
+import { UltravoxSession } from "ultravox-client";
+import type { VoiceSession } from "@shared/schema";
+import { Phone, PhoneOff, Mic, AlertTriangle, Radio, Zap } from "lucide-react";
 
 const sessionSchema = z.object({
-  phoneNumber: z.string().min(7, "Valid phone number required"),
   agentId: z.string().optional(),
 });
 type SessionForm = z.infer<typeof sessionSchema>;
+
+const AGENT_OPTIONS = [{ id: "manoj-abraham", name: "Manoj abraham" }];
 
 const MAX_DURATION = 600; // 10 minutes
 
@@ -29,6 +30,7 @@ interface VoiceSessionPageProps {
 export default function VoiceSessionPage({ userId }: VoiceSessionPageProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const uvSessionRef = useRef<UltravoxSession | null>(null);
   const [activeSession, setActiveSession] = useState<VoiceSession | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -37,15 +39,7 @@ export default function VoiceSessionPage({ userId }: VoiceSessionPageProps) {
 
   const form = useForm<SessionForm>({
     resolver: zodResolver(sessionSchema),
-    defaultValues: { phoneNumber: "", agentId: "" },
-  });
-
-  const { data: agents } = useQuery<Agent[]>({
-    queryKey: ["/api/agents", userId],
-    queryFn: async () => {
-      const res = await fetch(`/api/agents?userId=${userId}`);
-      return res.json();
-    },
+    defaultValues: { agentId: "manoj-abraham" },
   });
 
   const { data: sessions } = useQuery<VoiceSession[]>({
@@ -59,17 +53,25 @@ export default function VoiceSessionPage({ userId }: VoiceSessionPageProps) {
 
   const startMutation = useMutation({
     mutationFn: async (data: SessionForm) => {
-      const res = await apiRequest("POST", "/api/sessions/start", { ...data, userId });
+      const res = await apiRequest("POST", "/api/sessions/start", { userId, agentId: data.agentId || undefined });
       return res.json();
     },
     onSuccess: (data) => {
-      if (data.session) {
+      if (data.session && data.joinUrl) {
         setActiveSession(data.session);
         setElapsed(0);
-        // Radial energy wave
         setShockwaves(prev => [...prev, Date.now()]);
         setTimeout(() => setShockwaves(prev => prev.slice(1)), 1000);
-        toast({ title: "Call Started", description: `Connected to ${data.session.phoneNumber}` });
+        try {
+          if (uvSessionRef.current) uvSessionRef.current.leaveCall();
+          const session = new UltravoxSession();
+          uvSessionRef.current = session;
+          session.joinCall(data.joinUrl);
+          toast({ title: "Call Started", description: "Connected to voice agent" });
+        } catch (e) {
+          console.error("Ultravox join failed:", e);
+          toast({ title: "Connection Error", description: "Could not join voice call", variant: "destructive" });
+        }
         queryClient.invalidateQueries({ queryKey: ["/api/sessions", userId] });
         queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       } else {
@@ -79,18 +81,42 @@ export default function VoiceSessionPage({ userId }: VoiceSessionPageProps) {
     onError: () => toast({ title: "Connection Failed", description: "Neural link disrupted", variant: "destructive" }),
   });
 
+  const clearActiveCall = () => {
+    setActiveSession(null);
+    setElapsed(0);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    if (uvSessionRef.current) {
+      uvSessionRef.current.leaveCall().catch((e) => console.warn("leaveCall:", e));
+      uvSessionRef.current = null;
+    }
+  };
+
   const endMutation = useMutation({
     mutationFn: async (sessionId: string) => {
+      if (uvSessionRef.current) {
+        try {
+          await uvSessionRef.current.leaveCall();
+        } catch (e) {
+          console.warn("leaveCall error:", e);
+        }
+        uvSessionRef.current = null;
+      }
       const res = await apiRequest("POST", `/api/sessions/${sessionId}/end`, {});
       return res.json();
     },
     onSuccess: () => {
-      setActiveSession(null);
-      setElapsed(0);
-      if (timerRef.current) clearInterval(timerRef.current);
+      clearActiveCall();
       toast({ title: "Call Ended", description: "Session archived" });
       queryClient.invalidateQueries({ queryKey: ["/api/sessions", userId] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+    },
+    onError: () => {
+      clearActiveCall();
+      toast({ title: "Call ended", description: "Voice call disconnected", variant: "destructive" });
+      queryClient.invalidateQueries({ queryKey: ["/api/sessions", userId] });
     },
   });
 
@@ -128,7 +154,7 @@ export default function VoiceSessionPage({ userId }: VoiceSessionPageProps) {
           VOICE SESSION CONTROL
         </h1>
         <p className="text-muted-foreground text-sm mt-1 tracking-wide" style={{ fontFamily: "Oxanium" }}>
-          Initiate and manage AI voice calls with 10-minute session cap
+          Start a realtime AI voice call in your browser. Mic access required.
         </p>
       </div>
 
@@ -218,12 +244,16 @@ export default function VoiceSessionPage({ userId }: VoiceSessionPageProps) {
                 </div>
 
                 <div className="text-xs text-muted-foreground mb-4" style={{ fontFamily: "Oxanium" }}>
-                  <span className="text-cyan-400">CONNECTED:</span> {activeSession.phoneNumber}
+                  <span className="text-cyan-400">CONNECTED:</span> Voice agent (browser)
                 </div>
 
                 <Button
                   data-testid="button-end-call"
-                  onClick={() => endMutation.mutate(activeSession.id)}
+                  onClick={() => {
+                    const sessionId = activeSession.id;
+                    clearActiveCall();
+                    endMutation.mutate(sessionId);
+                  }}
                   disabled={endMutation.isPending}
                   className="w-full tracking-widest font-bold"
                   style={{
@@ -249,7 +279,7 @@ export default function VoiceSessionPage({ userId }: VoiceSessionPageProps) {
                 <div className="flex items-center gap-2 mb-5">
                   <Radio className="w-4 h-4 text-cyan-400" />
                   <span className="text-sm tracking-widest text-muted-foreground uppercase" style={{ fontFamily: "Oxanium" }}>
-                    New Voice Session
+                    (()) NEW VOICE SESSION
                   </span>
                 </div>
 
@@ -257,50 +287,25 @@ export default function VoiceSessionPage({ userId }: VoiceSessionPageProps) {
                   <form onSubmit={form.handleSubmit((d) => startMutation.mutate(d))} className="space-y-4">
                     <FormField
                       control={form.control}
-                      name="phoneNumber"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs tracking-[0.2em] uppercase text-muted-foreground" style={{ fontFamily: "Oxanium" }}>
-                            Target Phone Number
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              data-testid="input-phone-number"
-                              {...field}
-                              placeholder="+91 9876543210"
-                              className="font-mono text-sm"
-                              style={{
-                                background: "rgba(0,212,255,0.04)",
-                                border: "1px solid rgba(0,212,255,0.15)",
-                              }}
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
                       name="agentId"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-xs tracking-[0.2em] uppercase text-muted-foreground" style={{ fontFamily: "Oxanium" }}>
-                            Select Agent (Optional)
+                            SELECT AGENT (OPTIONAL)
                           </FormLabel>
                           <FormControl>
-                            <Select onValueChange={field.onChange} value={field.value}>
+                            <Select onValueChange={field.onChange} value={field.value || "manoj-abraham"}>
                               <SelectTrigger
                                 data-testid="select-agent"
                                 className="font-mono text-xs"
                                 style={{ background: "rgba(0,212,255,0.04)", border: "1px solid rgba(0,212,255,0.15)" }}
                               >
-                                <SelectValue placeholder="Auto-select agent" />
+                                <SelectValue placeholder="Manoj abraham" />
                               </SelectTrigger>
                               <SelectContent style={{ background: "hsl(220 28% 8%)", border: "1px solid rgba(0,212,255,0.2)" }}>
-                                <SelectItem value="auto" className="text-xs font-mono">Auto-select</SelectItem>
-                                {agents?.map(a => (
+                                {AGENT_OPTIONS.map(a => (
                                   <SelectItem key={a.id} value={a.id} className="text-xs font-mono">
-                                    {a.agentName}
+                                    {a.name}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -309,15 +314,6 @@ export default function VoiceSessionPage({ userId }: VoiceSessionPageProps) {
                         </FormItem>
                       )}
                     />
-
-                    <div className="p-3 rounded-lg" style={{ background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.2)" }}>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-3 h-3 text-yellow-400" />
-                        <span className="text-xs text-yellow-400 tracking-widest" style={{ fontFamily: "Oxanium" }}>
-                          10 MINUTE SESSION CAP PER NUMBER
-                        </span>
-                      </div>
-                    </div>
 
                     <Button
                       type="submit"

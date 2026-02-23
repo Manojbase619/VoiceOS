@@ -11,7 +11,6 @@ import { AICursor } from "@/components/ai-cursor";
 import { AnimatePresence, motion } from "framer-motion";
 import AuthPage from "@/pages/auth";
 import Dashboard from "@/pages/dashboard";
-import AgentBuilder from "@/pages/agent-builder";
 import VoiceSessionPage from "@/pages/voice-session";
 import AdminPanel from "@/pages/admin";
 import NotFound from "@/pages/not-found";
@@ -46,27 +45,20 @@ function AppLayout({ user, onLogout }: { user: User; onLogout: () => void }) {
         <AppSidebar user={user} onLogout={onLogout} />
         <div className="flex flex-col flex-1 overflow-hidden relative" style={{ zIndex: 10 }}>
           <header
-            className="flex items-center gap-3 px-4 py-3 border-b shrink-0"
-            style={{
-              background: "rgba(10,15,30,0.8)",
-              backdropFilter: "blur(20px)",
-              borderColor: "rgba(0,212,255,0.08)",
-            }}
+            className="flex items-center gap-3 px-4 py-3 border-b shrink-0 bg-[rgba(10,15,30,0.8)] backdrop-blur-xl border-border"
           >
             <SidebarTrigger
               data-testid="button-sidebar-toggle"
-              className="text-muted-foreground"
-              style={{ color: "rgba(0,212,255,0.6)" }}
+              className="text-muted-foreground text-primary"
             />
             <div className="flex-1 flex items-center gap-3">
-              <div className="h-px flex-1 max-w-24" style={{ background: "linear-gradient(90deg, rgba(0,212,255,0.3), transparent)" }} />
+              <div className="h-px flex-1 max-w-24 bg-gradient-to-r from-primary/30 to-transparent" />
               <span className="text-xs tracking-[0.3em] text-muted-foreground" style={{ fontFamily: "Oxanium" }}>
                 {location === "/dashboard" && "LIVE COMMAND CENTER"}
-                {location === "/agents" && "AGENT SYNTHESIS LAB"}
                 {location === "/sessions" && "VOICE SESSION CONTROL"}
                 {location === "/admin" && "ADMIN CONTROL MATRIX"}
               </span>
-              <div className="h-px flex-1 max-w-24" style={{ background: "linear-gradient(270deg, rgba(0,212,255,0.3), transparent)" }} />
+              <div className="h-px flex-1 max-w-24 bg-gradient-to-l from-primary/30 to-transparent" />
             </div>
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
@@ -84,9 +76,6 @@ function AppLayout({ user, onLogout }: { user: User; onLogout: () => void }) {
               >
                 <Switch>
                   <Route path="/dashboard" component={Dashboard} />
-                  <Route path="/agents">
-                    {() => <AgentBuilder userId={user.id} />}
-                  </Route>
                   <Route path="/sessions">
                     {() => <VoiceSessionPage userId={user.id} />}
                   </Route>
@@ -132,10 +121,10 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "hsl(220 30% 4%)" }}>
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="w-16 h-16 rounded-full border-2 border-cyan-400/30 border-t-cyan-400 animate-spin mx-auto mb-4" />
-          <p className="text-cyan-400/60 text-xs tracking-widest" style={{ fontFamily: "Oxanium" }}>INITIALIZING...</p>
+          <p className="text-muted-foreground text-xs tracking-widest" style={{ fontFamily: "Oxanium" }}>INITIALIZING...</p>
         </div>
       </div>
     );

@@ -141,7 +141,7 @@ function AgentCard({ agent, index }: { agent: Agent; index: number }) {
               <div className="p-5 space-y-4">
                 <div>
                   <p className="text-xs text-cyan-400 tracking-widest mb-2" style={{ fontFamily: "Oxanium" }}>
-                    ULTRAVOX SYSTEM PROMPT
+                    SYSTEM PROMPT
                   </p>
                   <pre className="text-xs text-foreground/80 font-mono bg-black/30 rounded-lg p-3 overflow-auto max-h-40 leading-relaxed"
                     style={{ border: "1px solid rgba(0,212,255,0.1)" }}>

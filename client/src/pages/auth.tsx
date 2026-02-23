@@ -1,9 +1,8 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -40,7 +39,6 @@ interface AuthPageProps {
 }
 
 export default function AuthPage({ onLogin }: AuthPageProps) {
-  const [mode, setMode] = useState<"login" | "signup">("login");
   const { toast } = useToast();
 
   const form = useForm<AuthForm>({
@@ -48,17 +46,17 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
     defaultValues: { email: "", mobile: "", countryCode: "+91" },
   });
 
-  const loginMutation = useMutation({
+  const initMutation = useMutation({
     mutationFn: async (data: AuthForm) => {
-      const res = await apiRequest("POST", `/api/auth/${mode}`, data);
+      const res = await apiRequest("POST", "/api/auth/signup", data);
       return res.json();
     },
     onSuccess: (data) => {
       if (data.user) {
-        toast({ title: mode === "login" ? "Access Granted" : "System Initialized", description: "Welcome to VoiceOS Command Center" });
+        toast({ title: "Initialized", description: "Welcome to VoiceOS Command Center" });
         onLogin(data.user);
       } else {
-        toast({ title: "Error", description: data.message || "Authentication failed", variant: "destructive" });
+        toast({ title: "Error", description: data.message || "Initialization failed", variant: "destructive" });
       }
     },
     onError: () => {
@@ -109,174 +107,129 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
           </p>
         </motion.div>
 
-        {/* Auth Card */}
+        {/* Initialize card — email + phone only */}
         <motion.div
           initial={{ opacity: 0, y: 30, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="holographic-card rounded-xl p-8 neon-glow-cyan"
         >
-          {/* Mode toggle */}
-          <div className="flex mb-8 rounded-lg overflow-hidden border border-cyan-400/15 p-1 gap-1"
-            style={{ background: "rgba(0,0,0,0.3)" }}>
-            {(["login", "signup"] as const).map((m) => (
-              <button
-                key={m}
-                onClick={() => setMode(m)}
-                data-testid={`button-auth-${m}`}
-                className="flex-1 py-2 text-sm font-medium tracking-widest rounded-md transition-all duration-300"
-                style={{
-                  background: mode === m ? "rgba(0,212,255,0.15)" : "transparent",
-                  color: mode === m ? "#00d4ff" : "rgba(148,163,184,0.8)",
-                  boxShadow: mode === m ? "0 0 20px rgba(0,212,255,0.2), inset 0 0 20px rgba(0,212,255,0.05)" : "none",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.2em",
-                  fontFamily: "Oxanium, sans-serif",
-                }}
-              >
-                {m === "login" ? "Access" : "Initialize"}
-              </button>
-            ))}
-          </div>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit((d) => initMutation.mutate(d))} className="space-y-5">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs tracking-[0.2em] uppercase text-muted-foreground"
+                      style={{ fontFamily: "Oxanium" }}>
+                      Email
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        data-testid="input-email"
+                        {...field}
+                        placeholder="agent@basethesis.ai"
+                        className="font-mono text-sm"
+                        style={{
+                          background: "rgba(0,212,255,0.04)",
+                          border: "1px solid rgba(0,212,255,0.15)",
+                          color: "#e2f8ff",
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={mode}
-              initial={{ opacity: 0, x: mode === "login" ? -20 : 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: mode === "login" ? 20 : -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit((d) => loginMutation.mutate(d))} className="space-y-5">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs tracking-[0.2em] uppercase text-muted-foreground"
-                          style={{ fontFamily: "Oxanium" }}>
-                          Neural ID (Email)
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            data-testid="input-email"
-                            {...field}
-                            placeholder="agent@basethesis.ai"
-                            className="font-mono text-sm"
+              <div className="flex gap-3">
+                <FormField
+                  control={form.control}
+                  name="countryCode"
+                  render={({ field }) => (
+                    <FormItem className="w-36">
+                      <FormLabel className="text-xs tracking-[0.2em] uppercase text-muted-foreground"
+                        style={{ fontFamily: "Oxanium" }}>
+                        Code
+                      </FormLabel>
+                      <FormControl>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <SelectTrigger
+                            data-testid="select-country-code"
+                            className="font-mono text-xs"
                             style={{
                               background: "rgba(0,212,255,0.04)",
                               border: "1px solid rgba(0,212,255,0.15)",
-                              color: "#e2f8ff",
                             }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          >
+                            <SelectValue placeholder="+91" />
+                          </SelectTrigger>
+                          <SelectContent style={{ background: "hsl(220 28% 8%)", border: "1px solid rgba(0,212,255,0.2)" }}>
+                            {countryCodes.map((c) => (
+                              <SelectItem key={c.code} value={c.code} className="font-mono text-xs">
+                                {c.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="mobile"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel className="text-xs tracking-[0.2em] uppercase text-muted-foreground"
+                        style={{ fontFamily: "Oxanium" }}>
+                        Phone number
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          data-testid="input-mobile"
+                          {...field}
+                          placeholder="9876543210"
+                          className="font-mono text-sm"
+                          style={{
+                            background: "rgba(0,212,255,0.04)",
+                            border: "1px solid rgba(0,212,255,0.15)",
+                            color: "#e2f8ff",
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-                  <div className="flex gap-3">
-                    <FormField
-                      control={form.control}
-                      name="countryCode"
-                      render={({ field }) => (
-                        <FormItem className="w-36">
-                          <FormLabel className="text-xs tracking-[0.2em] uppercase text-muted-foreground"
-                            style={{ fontFamily: "Oxanium" }}>
-                            Region
-                          </FormLabel>
-                          <FormControl>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <SelectTrigger
-                                data-testid="select-country-code"
-                                className="font-mono text-xs"
-                                style={{
-                                  background: "rgba(0,212,255,0.04)",
-                                  border: "1px solid rgba(0,212,255,0.15)",
-                                }}
-                              >
-                                <SelectValue placeholder="+91" />
-                              </SelectTrigger>
-                              <SelectContent style={{ background: "hsl(220 28% 8%)", border: "1px solid rgba(0,212,255,0.2)" }}>
-                                {countryCodes.map((c) => (
-                                  <SelectItem key={c.code} value={c.code} className="font-mono text-xs">
-                                    {c.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="mobile"
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormLabel className="text-xs tracking-[0.2em] uppercase text-muted-foreground"
-                            style={{ fontFamily: "Oxanium" }}>
-                            Mobile Link
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              data-testid="input-mobile"
-                              {...field}
-                              placeholder="9876543210"
-                              className="font-mono text-sm"
-                              style={{
-                                background: "rgba(0,212,255,0.04)",
-                                border: "1px solid rgba(0,212,255,0.15)",
-                                color: "#e2f8ff",
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <Button
-                    type="submit"
-                    data-testid="button-auth-submit"
-                    disabled={loginMutation.isPending}
-                    className="w-full mt-6 tracking-[0.3em] text-sm font-semibold"
-                    style={{
-                      background: "linear-gradient(135deg, rgba(0,212,255,0.8), rgba(0,100,200,0.8))",
-                      border: "1px solid rgba(0,212,255,0.4)",
-                      boxShadow: "0 0 30px rgba(0,212,255,0.3), inset 0 0 20px rgba(0,212,255,0.1)",
-                      fontFamily: "Oxanium, sans-serif",
-                      color: "#001a2e",
-                      fontWeight: 700,
-                    }}
-                  >
-                    {loginMutation.isPending ? (
-                      <span className="flex items-center gap-2">
-                        <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                        INITIALIZING...
-                      </span>
-                    ) : (
-                      mode === "login" ? "GRANT ACCESS" : "INITIALIZE SYSTEM"
-                    )}
-                  </Button>
-                </form>
-              </Form>
-            </motion.div>
-          </AnimatePresence>
-
-          <div className="mt-6 text-center">
-            <p className="text-xs text-muted-foreground tracking-wider" style={{ fontFamily: "Oxanium" }}>
-              PROOF OF CONCEPT MODE — NO OTP VERIFICATION
-            </p>
-            <div className="mt-2 flex items-center justify-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-xs text-green-400/70 tracking-widest" style={{ fontFamily: "Oxanium" }}>
-                SYSTEM ONLINE
-              </span>
-            </div>
-          </div>
+              <Button
+                type="submit"
+                data-testid="button-auth-submit"
+                disabled={initMutation.isPending}
+                className="w-full mt-6 tracking-[0.3em] text-sm font-semibold"
+                style={{
+                  background: "linear-gradient(135deg, rgba(0,212,255,0.8), rgba(0,100,200,0.8))",
+                  border: "1px solid rgba(0,212,255,0.4)",
+                  boxShadow: "0 0 30px rgba(0,212,255,0.3), inset 0 0 20px rgba(0,212,255,0.1)",
+                  fontFamily: "Oxanium, sans-serif",
+                  color: "#001a2e",
+                  fontWeight: 700,
+                }}
+              >
+                {initMutation.isPending ? (
+                  <span className="flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    INITIALIZING...
+                  </span>
+                ) : (
+                  "INITIALIZE"
+                )}
+              </Button>
+            </form>
+          </Form>
         </motion.div>
 
         {/* Bottom info */}
@@ -287,7 +240,7 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
           className="text-center text-xs text-muted-foreground mt-6 tracking-wider"
           style={{ fontFamily: "Oxanium" }}
         >
-          POWERED BY ULTRAVOX AI ENGINE v2.0
+          POWERED BY BASETHESIS VOICEOS
         </motion.p>
       </div>
     </div>

@@ -1,6 +1,6 @@
 # Basethesis VoiceOS
 
-A cinematic, Hollywood-grade AI Operating System SaaS web application for AI Intent Capture and Voice Agent Generation, built on UltraVox.
+A cinematic, Hollywood-grade AI Operating System SaaS web application for AI Intent Capture and Voice Agent Generation.
 
 ## Overview
 
@@ -8,7 +8,7 @@ VoiceOS is a full production-style SaaS platform that feels like a futuristic AI
 
 - **Authentication**: Email + Mobile number login/signup (POC mode, no OTP)
 - **Live Dashboard**: Real-time analytics with 3D holographic UI, waveform visualizer, charts, heatmaps
-- **Agent Builder**: AI-powered intent capture that generates UltraVox-ready system prompts
+- **Agent Builder**: AI-powered intent capture that generates voice-agent-ready system prompts
 - **Voice Session Control**: Start/End calls with 10-minute session cap per phone number
 - **Admin Panel**: Full system oversight with CSV export
 
@@ -90,3 +90,24 @@ Pre-seeded with:
 
 Login with: `admin@basethesis.ai` (any mobile number, country code +91)
 Regular user: `rajesh.kumar@example.com`
+
+## Deploy to Vercel
+
+1. **Connect the repo**  
+   Go to [vercel.com](https://vercel.com) → New Project → Import your Git repository.
+
+2. **Configure build**  
+   - **Build Command:** `npm run build:vercel` (already set in `vercel.json`)  
+   - **Output Directory:** `public`  
+   - **Install Command:** `npm install`
+
+3. **Environment variables**  
+   In the Vercel project → Settings → Environment Variables, add:
+   - `DATABASE_URL` — PostgreSQL connection string (e.g. Neon)
+   - `ULTRAVOX_API_KEY` — For voice sessions (if you use Ultravox)
+
+4. **Database**  
+   Ensure your PostgreSQL DB (e.g. Neon) is reachable from the internet and run migrations (e.g. `npm run db:push`) against the production DB before or after first deploy.
+
+5. **Deploy**  
+   Push to your main branch or click Deploy. The app will be served from the root; static assets come from `public/` and API routes from the Express app (root `index.ts`).

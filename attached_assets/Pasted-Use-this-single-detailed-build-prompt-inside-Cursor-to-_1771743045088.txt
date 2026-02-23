@@ -1,0 +1,296 @@
+Use this **single detailed build prompt** inside Cursor to generate your full rustic, cinematic, 3D-rendered Voice Agent Platform with OpenAI-powered prompt generation and rephrasing layer.
+
+---
+
+### RUSTIC CINEMATIC 3D VOICE AGENT PLATFORM – FULL BUILD PROMPT
+
+```id="1s9k2d"
+Build a full production-style SaaS web application called:
+
+Basethesis CommandOS
+
+This is a Voice Agent Creation Platform.
+
+IMPORTANT:
+Do NOT mention UltraVox or any underlying voice model provider anywhere in the UI or branding.
+Voice runtime must remain completely abstracted from frontend.
+
+------------------------------------------------------------
+
+AUTHENTICATION MODULE:
+
+Users must be able to log in using:
+
+• Mobile Number (with country code dropdown)
+• Email ID
+
+No OTP verification required (POC mode).
+
+Allow direct login/signup using:
+Mobile Number + Email ID combination
+
+Store user securely in Supabase/PostgreSQL.
+
+After login → Redirect to LIVE Dashboard.
+
+------------------------------------------------------------
+
+DASHBOARD:
+
+Create a cinematic LIVE dashboard containing:
+
+• Generated Agents
+• Prompt Creation History
+• Active Voice Sessions
+• Call Duration Analytics
+• Usage Timeline
+• Agent Category Distribution
+• Session Logs
+• Daily Usage Charts
+• System Heatmap
+
+Every dashboard element must exist as a floating 3D card in space.
+
+------------------------------------------------------------
+
+AGENT BUILDER (CORE MODULE):
+
+Create an “Agent Studio” section.
+
+User enters in natural language:
+
+Examples:
+"I need a loan recovery agent"
+"I want a polite insurance follow-up agent"
+"I want a strict legal inquiry style agent"
+"I want an educational loan enquiry agent"
+
+System must:
+
+STEP 1:
+Use OpenAI model to capture user intent.
+
+Extract:
+
+• Agent Role
+• Communication Style
+• Emotional Calibration
+• Domain Context
+• Objective
+• Risk Sensitivity
+• Target Outcome
+
+STEP 2:
+Generate structured prompt:
+
+{
+ "agent_name": "",
+ "communication_style": "",
+ "domain_context": "",
+ "objective": "",
+ "tone": "",
+ "conversation_rules": [],
+ "risk_flags": [],
+ "closing_goal": ""
+}
+
+STEP 3:
+Send the above generated prompt again into a second OpenAI refinement layer.
+
+Rephrase using:
+
+• Clarity optimization
+• Conversational realism
+• Emotional intelligence
+• Context grounding
+• Human-like phrasing
+• Safety alignment
+
+Output:
+Voice-runtime-ready optimized system prompt.
+
+Only this optimized prompt is sent to voice runtime.
+
+------------------------------------------------------------
+
+VOICE SESSION CONTROL:
+
+Allow:
+
+• Start Call
+• End Call
+
+Apply:
+10-minute cap per phone number
+
+If exceeded:
+Automatically terminate call.
+
+Maintain:
+
+• Call Analytics
+• Session Logs
+• Usage Summary
+
+------------------------------------------------------------
+
+ADMIN PANEL:
+
+Admin can view:
+
+• Total Users
+• Phone Number Usage
+• Total Calls Made
+• Session Duration
+• Agent Types Used
+• Prompt Types Generated
+• Drop-off Rate
+
+Allow CSV Export.
+
+------------------------------------------------------------
+
+RUSTIC CINEMATIC 3D UI SYSTEM:
+
+Design Language:
+
+• Dark industrial tone
+• Matte metal textures
+• Stone-like panels
+• Burnt copper accents
+• Soft amber glows
+• Mechanical depth shadows
+• Dust particle atmosphere
+
+Avoid neon futuristic style.
+Prefer:
+
+• Rust
+• Steel
+• Graphite
+• Bronze
+• Ash
+• Burnt gold
+
+------------------------------------------------------------
+
+ADVANCED COLOR SYSTEM:
+
+Provide full theme engine:
+
+• Rustic Copper Theme
+• Industrial Steel Theme
+• Obsidian Night Theme
+• Desert Bronze Theme
+• Charcoal Ash Theme
+
+Allow runtime switching between themes.
+
+Entire UI must smoothly recolor with animation.
+
+------------------------------------------------------------
+
+3D ENVIRONMENT:
+
+Use Three.js to build:
+
+• Floating panel slabs
+• Moving dust particles
+• Light shafts
+• Industrial fog
+• Depth shadow casting
+• Metallic surface reflections
+• Ambient environment lighting
+
+When user scrolls:
+3D camera subtly pans.
+
+When user hovers:
+Cards tilt in perspective.
+
+------------------------------------------------------------
+
+CURSOR SYSTEM:
+
+Replace default cursor with:
+
+• Molten core cursor
+• Particle trail
+• Soft distortion aura
+• Magnetic hover snap
+• Light shimmer trail
+
+During voice session:
+Cursor pulses based on mic amplitude.
+
+------------------------------------------------------------
+
+CARD ANIMATION:
+
+On load:
+Rise from depth (Z-axis)
+Rotate slightly
+Settle with inertia
+
+On hover:
+Tilt toward cursor
+Internal light sweep
+
+On click:
+Ripple distortion
+
+------------------------------------------------------------
+
+TRANSITIONS:
+
+Page change:
+Cinematic fade + depth zoom
+
+Modal open:
+Background depth blur
+Card floats forward
+
+Agent generated:
+Prompt hologram materializes
+
+Call start:
+Soft radial wave
+
+Call end:
+UI dims gently
+
+------------------------------------------------------------
+
+TECH STACK:
+
+Frontend:
+Next.js + Tailwind
+
+Animation:
+Framer Motion
+GSAP
+React Spring
+
+3D:
+Three.js
+WebGL shaders
+
+Backend:
+Node.js + Supabase
+
+Realtime:
+WebSockets
+
+Maintain:
+60 FPS performance
+Lazy load all 3D assets
+
+------------------------------------------------------------
+
+FINAL EXPERIENCE:
+
+User must feel like they are operating
+a physical industrial AI command console.
+```
+
+---

@@ -11,7 +11,7 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar";
 import {
-  LayoutDashboard, Brain, Phone, Shield, LogOut, Cpu, Radio, Zap
+  LayoutDashboard, Phone, Shield, LogOut, Cpu, Radio, Zap
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -22,7 +22,6 @@ interface AppSidebarProps {
 
 const navItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, color: "#00d4ff" },
-  { title: "Agent Builder", url: "/agents", icon: Brain, color: "#8b5cf6" },
   { title: "Voice Sessions", url: "/sessions", icon: Phone, color: "#00ff88" },
   { title: "Admin Panel", url: "/admin", icon: Shield, color: "#f59e0b", adminOnly: true },
 ];
@@ -112,7 +111,7 @@ export function AppSidebar({ user, onLogout }: AppSidebarProps) {
             </div>
             {[
               { label: "AI Engine", status: "ONLINE", color: "#00ff88" },
-              { label: "UltraVox API", status: "READY", color: "#00d4ff" },
+              { label: "Voice API", status: "READY", color: "#00d4ff" },
               { label: "Neural Net", status: "ACTIVE", color: "#8b5cf6" },
             ].map(({ label, status, color }) => (
               <div key={label} className="flex justify-between items-center py-1">

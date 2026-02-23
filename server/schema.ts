@@ -51,9 +51,7 @@ export const agents = pgTable("agents", {
 // ================= SESSIONS =================
 
 export const sessions = pgTable("sessions", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
+  id: text("id").primaryKey(),
 
   userId: text("user_id").notNull(),
 
