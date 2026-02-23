@@ -49,18 +49,22 @@ export async function createApp(): Promise<{ app: Express; httpServer: Server }>
   // Register API routes
   await registerRoutes(httpServer, app);
 
+  // Global error handler: always send JSON body and log full error for debugging
   app.use((err: unknown, _req: Request, res: Response, next: NextFunction) => {
     const status =
       (err as { status?: number }).status ??
       (err as { statusCode?: number }).statusCode ??
       500;
-
     const message = (err as Error).message ?? "Internal Server Error";
-    console.error("Internal Server Error:", err);
+    console.error("Internal Server Error:", message);
+    console.error((err as Error).stack);
 
     if (res.headersSent) return next(err);
 
-    return res.status(status).json({ message });
+    return res.status(status).json({
+      message: message || "An unexpected error occurred",
+      error: process.env.NODE_ENV !== "production" ? (err as Error).stack : undefined,
+    });
   });
 
   return { app, httpServer };

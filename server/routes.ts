@@ -46,6 +46,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     } catch (e: unknown) {
       const err = e as Error;
       console.error("Signup Error:", err.message);
+      console.error(err.stack);
       return res.status(500).json({
         message: "Signup failed",
         error: err.message,
