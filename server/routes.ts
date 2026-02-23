@@ -21,20 +21,6 @@ export async function registerRoutes(
 
       const { email, mobile, countryCode } = req.body;
 
-      if (!email || !mobile) {
-        return res.status(400).json({
-          message: "Email and mobile required",
-        });
-      }
-
-      const existing = await db.query.users.findFirst({
-        where: (u, { eq }) => eq(u.email, email),
-      });
-
-      if (existing) {
-        return res.json({ user: existing });
-      }
-
       const [user] = await db
         .insert(users)
         .values({
