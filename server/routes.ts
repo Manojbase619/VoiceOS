@@ -9,34 +9,37 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
 
-  app.post(
-    "/api/auth/signup",
-    async (
-      req: Request<{}, {}, {
-        email: string;
-        mobile: string;
-        countryCode?: string;
-      }>,
-      res: Response
-    ) => {
-
-      const { email, mobile, countryCode } = req.body as { email: string; mobile: string; countryCode?: string };
-
+  app.post("/api/auth/signup", async (req, res) => {
+    try {
+  
+      const { email, mobile, countryCode } = req.body;
+  
+      if (!email || !mobile) {
+        return res.status(400).json({
+          message: "Email and mobile required",
+        });
+      }
+  
+      const existing = await db.query.users.findFirst({
+        where: (u, { eq }) => eq(u.email, email),
+      });
+  
+      if (existing) {
+        return res.json({ user: existing });
+      }
+  
       const [user] = await db.insert(users).values({
-        id: crypto.randomUUID(),
-        email: String(email),
-        mobile: String(mobile),
-        ...(countryCode != null && { countryCode: String(countryCode) }),
+        email,
+        mobile,
+        countryCode: countryCode ?? "+91",
       }).returning();
-
+  
       return res.json({ user });
+  
+    } catch (e: any) {
+      console.error("Signup Error:", e);
+      return res.status(500).json({
+        message: e.message,
+      });
     }
-  );
-
-  app.get("/api/health", async (_, res) => {
-    await db.query.users.findMany();
-    return res.json({ status: "connected" });
   });
-
-  return httpServer;
-}
