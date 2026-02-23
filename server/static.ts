@@ -11,8 +11,8 @@ export function serveStatic(app: express.Express) {
 
   app.use(express.static(distPath));
 
-  // EXPRESS 5 FIX
-  app.get("/app/:path(*)", (_, res) => {
+  // SPA fallback: serve index.html for any non-file GET (Express 5 path-to-regexp needs named param)
+  app.get("/:path(.*)", (_, res) => {
     res.sendFile(path.join(distPath, "index.html"));
   });
 
