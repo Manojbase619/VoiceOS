@@ -6,12 +6,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export function serveStatic(app: express.Express) {
-  const distPath = path.resolve(__dirname, "../public");
+
+  const distPath = path.resolve(__dirname, "../dist/public");
 
   app.use(express.static(distPath));
 
-  // Express 5 wildcard fallback
-  app.use((_, res) => {
+  // ❗ DO NOT override root (Railway healthcheck)
+  app.get("/app/*", (_, res) => {
     res.sendFile(path.join(distPath, "index.html"));
   });
+
 }
