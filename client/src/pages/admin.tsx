@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { API_BASE } from "@/lib/queryClient";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
@@ -45,7 +46,7 @@ export default function AdminPanel() {
   const handleExport = async () => {
     setExportLoading(true);
     try {
-      const res = await fetch("/api/admin/export");
+      const res = await fetch(`${API_BASE}/api/admin/export`);
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");

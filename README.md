@@ -104,6 +104,7 @@ Regular user: `rajesh.kumar@example.com`
 
 3. **Environment variables**  
    In the Vercel project → Settings → Environment Variables, add:
+   - `VITE_API_URL` — Backend API base URL (e.g. `https://voiceos-production.up.railway.app` if the API runs on Railway). Omit or leave empty if the frontend is served from the same origin as the API.
    - `DATABASE_URL` — PostgreSQL connection string (e.g. Neon)
    - `ULTRAVOX_API_KEY` — For voice sessions (if you use Ultravox)
 

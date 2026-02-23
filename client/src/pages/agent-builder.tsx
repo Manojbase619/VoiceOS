@@ -8,7 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, API_BASE } from "@/lib/queryClient";
 import type { Agent } from "@shared/schema";
 import {
   Brain, Zap, Target, Shield, Heart, MessageSquare,
@@ -184,7 +184,7 @@ export default function AgentBuilder({ userId }: AgentBuilderProps) {
   const { data: agents, isLoading } = useQuery<Agent[]>({
     queryKey: ["/api/agents", userId],
     queryFn: async () => {
-      const res = await fetch(`/api/agents?userId=${userId}`);
+      const res = await fetch(`${API_BASE}/api/agents?userId=${userId}`);
       return res.json();
     },
   });

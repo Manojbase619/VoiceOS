@@ -8,7 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, API_BASE } from "@/lib/queryClient";
 import { WaveformVisualizer } from "@/components/waveform-visualizer";
 import { UltravoxSession } from "ultravox-client";
 import type { VoiceSession } from "@shared/schema";
@@ -45,7 +45,7 @@ export default function VoiceSessionPage({ userId }: VoiceSessionPageProps) {
   const { data: sessions } = useQuery<VoiceSession[]>({
     queryKey: ["/api/sessions", userId],
     queryFn: async () => {
-      const res = await fetch(`/api/sessions?userId=${userId}`);
+      const res = await fetch(`${API_BASE}/api/sessions?userId=${userId}`);
       return res.json();
     },
     refetchInterval: activeSession ? 5000 : false,
