@@ -20,13 +20,13 @@ export async function registerRoutes(
       res: Response
     ) => {
 
-      const { email, mobile, countryCode } = req.body;
+      const { email, mobile, countryCode } = req.body as { email: string; mobile: string; countryCode?: string };
 
       const [user] = await db.insert(users).values({
         id: crypto.randomUUID(),
-        email,
-        mobile,
-        countryCode,
+        email: String(email),
+        mobile: String(mobile),
+        ...(countryCode != null && { countryCode: String(countryCode) }),
       }).returning();
 
       return res.json({ user });
