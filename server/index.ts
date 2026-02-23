@@ -9,6 +9,11 @@ const httpServer = createServer(app);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Railway healthcheck must pass on GET /
+app.get("/", (_, res) => {
+  res.status(200).send("OK");
+});
+
 async function startServer() {
 
   await registerRoutes(httpServer, app);
