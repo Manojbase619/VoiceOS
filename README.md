@@ -99,7 +99,8 @@ Regular user: `rajesh.kumar@example.com`
 2. **Configure build**  
    - **Build Command:** `npm run build:vercel` (already set in `vercel.json`)  
    - **Output Directory:** `public`  
-   - **Install Command:** `npm install`
+   - **Install Command:** `npm install`  
+   - **Start Command:** leave **empty**. Do not set `npm start` — Vercel runs the root `index.ts` Express app as a serverless function. Using a start command will start a container and is for Railway, not Vercel.
 
 3. **Environment variables**  
    In the Vercel project → Settings → Environment Variables, add:
