@@ -10,7 +10,7 @@ export function serveStatic(app: express.Express) {
 
   app.use(express.static(distPath));
 
-  app.get("*", (_, res) => {
+  app.get("/*", (_, res) => {
     res.sendFile(path.join(distPath, "index.html"));
   });
 }
