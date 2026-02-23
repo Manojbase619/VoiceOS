@@ -11,8 +11,8 @@ export function serveStatic(app: express.Express) {
 
   app.use(express.static(distPath));
 
-  // ❗ DO NOT override root (Railway healthcheck)
-  app.get("/app/*", (_, res) => {
+  // EXPRESS 5 FIX
+  app.get("/app/:path(*)", (_, res) => {
     res.sendFile(path.join(distPath, "index.html"));
   });
 
