@@ -22,8 +22,8 @@ export function log(message: string, source = "express") {
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 
-/** Creates the Express app (API only; no static or Vite). Used by Vercel serverless and by server/index. */
 export async function createApp(): Promise<{ app: Express; httpServer: Server }> {
+
   const app = express();
   const httpServer = createServer(app);
 
@@ -35,6 +35,15 @@ export async function createApp(): Promise<{ app: Express; httpServer: Server }>
     }),
   );
   app.use(express.urlencoded({ extended: false }));
+
+  // 🚨 RAILWAY HEALTHCHECK — MUST RESPOND FAST
+  app.get("/health", (_, res) => {
+    return res.status(200).send("OK");
+  });
+
+  app.get("/", (_, res) => {
+    return res.status(200).send("OK");
+  });
 
   app.use((req, res, next) => {
     const start = Date.now();
@@ -61,6 +70,7 @@ export async function createApp(): Promise<{ app: Express; httpServer: Server }>
     next();
   });
 
+  // Register actual API routes
   await registerRoutes(httpServer, app);
 
   app.use((err: unknown, _req: Request, res: Response, next: NextFunction) => {
