@@ -4,6 +4,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { createServer } from "http";
 import type { Server } from "http";
 import type { Express } from "express";
+import cors from "cors";
 import { registerRoutes } from "./routes";
 
 declare module "http" {
@@ -27,16 +28,32 @@ export async function createApp(): Promise<{ app: Express; httpServer: Server }>
   const app = express();
   const httpServer = createServer(app);
 
+  // ✅ CORS MUST COME FIRST
+  app.use(
+    cors({
+      origin: [
+        "http://localhost:5173",
+        "https://voice-os.vercel.app",
+        "https://voice-os-git-main-manojs-projects-436a909a.vercel.app"
+      ],
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      credentials: true,
+    })
+  );
+
+  app.options("*", cors());
+
   app.use(
     express.json({
       verify: (req, _res, buf) => {
         req.rawBody = buf;
       },
-    }),
+    })
   );
+
   app.use(express.urlencoded({ extended: false }));
 
-  // 🚨 RAILWAY HEALTHCHECK — MUST RESPOND FAST
+  // Railway health checks
   app.get("/health", (_, res) => {
     return res.status(200).send("OK");
   });
@@ -70,14 +87,20 @@ export async function createApp(): Promise<{ app: Express; httpServer: Server }>
     next();
   });
 
-  // Register actual API routes
+  // Register API routes
   await registerRoutes(httpServer, app);
 
   app.use((err: unknown, _req: Request, res: Response, next: NextFunction) => {
-    const status = (err as { status?: number }).status ?? (err as { statusCode?: number }).statusCode ?? 500;
+    const status =
+      (err as { status?: number }).status ??
+      (err as { statusCode?: number }).statusCode ??
+      500;
+
     const message = (err as Error).message ?? "Internal Server Error";
     console.error("Internal Server Error:", err);
+
     if (res.headersSent) return next(err);
+
     return res.status(status).json({ message });
   });
 
