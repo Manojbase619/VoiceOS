@@ -4,7 +4,6 @@ import express, { type Request, Response, NextFunction } from "express";
 import { createServer } from "http";
 import type { Server } from "http";
 import type { Express } from "express";
-import cors from "cors";
 import { registerRoutes } from "./routes";
 
 declare module "http" {
@@ -28,32 +27,31 @@ export async function createApp(): Promise<{ app: Express; httpServer: Server }>
   const app = express();
   const httpServer = createServer(app);
 
-  // ✅ CORS MUST COME FIRST
-  app.use(
-    cors({
-      origin: [
-        "http://localhost:5173",
-        "https://voice-os.vercel.app",
-        "https://voice-os-git-main-manojs-projects-436a909a.vercel.app"
-      ],
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      credentials: true,
-    })
-  );
+  // 🚨 HANDLE CORS + PREFLIGHT BEFORE ANYTHING (EXPRESS 5 SAFE)
+  app.use((req, res, next) => {
 
-  app.options("*", cors());
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+    if (req.method === "OPTIONS") {
+      return res.sendStatus(200);
+    }
+
+    next();
+  });
 
   app.use(
     express.json({
       verify: (req, _res, buf) => {
         req.rawBody = buf;
       },
-    })
+    }),
   );
 
   app.use(express.urlencoded({ extended: false }));
 
-  // Railway health checks
+  // 🚨 RAILWAY HEALTHCHECK
   app.get("/health", (_, res) => {
     return res.status(200).send("OK");
   });
@@ -87,7 +85,7 @@ export async function createApp(): Promise<{ app: Express; httpServer: Server }>
     next();
   });
 
-  // Register API routes
+  // REGISTER API ROUTES AFTER PREFLIGHT HANDLER
   await registerRoutes(httpServer, app);
 
   app.use((err: unknown, _req: Request, res: Response, next: NextFunction) => {
