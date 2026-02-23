@@ -12,9 +12,15 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.post("/api/auth/signup", async (req, res) => {
     try {
 
-      const email: string = req.body.email;
-      const mobile: string = req.body.mobile;
-      const countryCode: string = req.body.countryCode ?? "+91";
+      const body = req.body as {
+        email: string;
+        mobile: string;
+        countryCode?: string;
+      };
+
+      const email: string = body.email;
+      const mobile: string = body.mobile;
+      const countryCode: string = body.countryCode ?? "+91";
 
       if (!email || !mobile) {
         return res.status(400).json({ message: "Email and mobile required" });
@@ -28,8 +34,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         return res.json({ user: existing });
       }
 
-      const [user] = await db
-        .insert(users)
+      const [user] = await db.insert(users)
         .values({
           id: crypto.randomUUID(),
           email: email,
