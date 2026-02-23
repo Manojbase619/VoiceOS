@@ -1,10 +1,4 @@
-import {
-  pgTable,
-  text,
-  timestamp,
-  integer
-} from "drizzle-orm/pg-core";
-
+import { pgTable, text, timestamp, integer } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
 
@@ -13,7 +7,7 @@ import { sql } from "drizzle-orm";
 export const users = pgTable("users", {
   id: text("id")
     .primaryKey()
-    .default(sql`gen_random_uuid()`),
+    .default(sql`gen_random_uuid()`),   // 👈 THIS IS THE FIX
 
   email: text("email").notNull(),
 

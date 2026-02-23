@@ -21,14 +21,11 @@ export async function registerRoutes(
 
       const { email, mobile, countryCode } = req.body;
 
-      const [user] = await db
-        .insert(users)
-        .values({
-          email,
-          mobile,
-          countryCode,
-        })
-        .returning();
+      const [user] = await db.insert(users).values({
+        email,
+        mobile,
+        countryCode,
+      }).returning();
 
       return res.json({ user });
     }
