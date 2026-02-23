@@ -29,11 +29,7 @@ async function startServer() {
     await setupVite(httpServer, app);
   }
 
-  const PORT = process.env.PORT;
-
-  if (!PORT) {
-    throw new Error("PORT not provided by Railway");
-  }
+  const PORT = process.env.PORT || "5050";
 
   httpServer.listen({
     port: Number(PORT),
