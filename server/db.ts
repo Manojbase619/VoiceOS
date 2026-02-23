@@ -1,12 +1,4 @@
-import { drizzle } from "drizzle-orm/neon-serverless";
-import { neonConfig, Pool } from "@neondatabase/serverless";
-import ws from "ws";
-import * as schema from "../shared/schema";
+import { db as local } from "./db.local";
+import { db as prod } from "./db.prod";
 
-neonConfig.webSocketConstructor = ws;
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL!,
-});
-
-export const db = drizzle(pool, { schema });
+export const db = process.env.VERCEL ? prod : local;

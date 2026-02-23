@@ -1,11 +1,22 @@
+export const runtime = "nodejs";
+
+import serverless from "serverless-http";
 import { createApp } from "../server/app";
 
-let app: Awaited<ReturnType<typeof createApp>>["app"] | null = null;
+let handler: any;
 
-export default async function handler(req: any, res: any) {
-  if (!app) {
-    const { app: expressApp } = await createApp();
-    app = expressApp;
+export default async function (req: any, res: any) {
+  if (!handler) {
+    const { app } = await createApp();
+
+    // remove /api prefix so Express routes match
+    app.use((req, _res, next) => {
+      req.url = req.url.replace(/^\/api/, "");
+      next();
+    });
+
+    handler = serverless(app);
   }
-  return app(req, res);
+
+  return handler(req, res);
 }
