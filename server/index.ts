@@ -1,18 +1,12 @@
 import { createApp } from "./app";
 
-async function startServer() {
-  try {
-    const { httpServer } = await createApp();
+// Only start HTTP server locally; Vercel uses api/index.ts
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 8080;
 
-    const PORT = process.env.PORT || 8080;
-
+  createApp().then(({ httpServer }) => {
     httpServer.listen(Number(PORT), "0.0.0.0", () => {
-      console.log(`API Server running on port ${PORT}`);
+      console.log(`Local API running on ${PORT}`);
     });
-  } catch (err) {
-    console.error("Server failed to start:", err);
-    process.exit(1);
-  }
+  });
 }
-
-startServer();

@@ -1,5 +1,13 @@
 {
   "buildCommand": "npm run build:vercel",
   "outputDirectory": "public",
-  "framework": "vite"
+  "framework": "vite",
+  "functions": {
+    "api/index.ts": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api" }
+  ]
 }

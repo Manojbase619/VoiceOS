@@ -1,7 +1,6 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
-/** Base URL for API requests. Set VITE_API_URL in production (e.g. Railway). Must include https://. */
-const PRODUCTION_API_URL = "https://voiceos-production.up.railway.app";
+/** Same-origin API (Vercel serverless). Use VITE_API_URL only for a different backend (e.g. local dev). */
 function normalizeApiBase(raw: string): string {
   const s = (raw || "").trim();
   if (!s) return "";
@@ -9,7 +8,7 @@ function normalizeApiBase(raw: string): string {
   return `https://${s}`;
 }
 const envUrl = (import.meta.env.VITE_API_URL as string) ?? "";
-export const API_BASE = normalizeApiBase(envUrl) || (import.meta.env.PROD ? PRODUCTION_API_URL : "");
+export const API_BASE = normalizeApiBase(envUrl);
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
