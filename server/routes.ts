@@ -25,6 +25,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       }
 
       const [user] = await db.insert(users).values({
+        id: crypto.randomUUID(),
         email,
         mobile,
         countryCode: countryCode || "+91",
