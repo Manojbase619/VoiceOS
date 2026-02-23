@@ -10,7 +10,8 @@ export function serveStatic(app: express.Express) {
 
   app.use(express.static(distPath));
 
-  app.get("/*", (_, res) => {
+  // Express 5 wildcard fallback
+  app.use((_, res) => {
     res.sendFile(path.join(distPath, "index.html"));
   });
 }
