@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import type { Express, Request, Response } from "express";
 import { type Server } from "http";
 import { db } from "./db";
@@ -22,6 +23,7 @@ export async function registerRoutes(
       const { email, mobile, countryCode } = req.body;
 
       const [user] = await db.insert(users).values({
+        id: crypto.randomUUID(),
         email,
         mobile,
         countryCode,

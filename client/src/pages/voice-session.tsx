@@ -425,7 +425,7 @@ export default function VoiceSessionPage({ userId }: VoiceSessionPageProps) {
                           fontFamily: "Oxanium",
                           border: `1px solid ${session.status === "active" ? "rgba(0,255,136,0.2)" : session.terminationReason ? "rgba(239,68,68,0.2)" : "rgba(100,116,139,0.2)"}`,
                         }}>
-                          {session.terminationReason === "cap_exceeded" ? "CAP EXCEEDED" : session.status.toUpperCase()}
+                          {session.terminationReason === "cap_exceeded" ? "CAP EXCEEDED" : (session.status ?? "").toUpperCase()}
                         </span>
                         <p className="text-xs text-muted-foreground mt-1 text-right" style={{ fontFamily: "Oxanium" }}>
                           {session.durationSeconds}s

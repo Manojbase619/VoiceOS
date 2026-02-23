@@ -76,9 +76,9 @@ function AgentCard({ agent, index }: { agent: Agent; index: number }) {
             </div>
           </div>
           <span className="text-xs px-2 py-1 rounded-md shrink-0" style={{
-            background: `${TONE_COLORS[agent.tone] || "#00d4ff"}15`,
-            color: TONE_COLORS[agent.tone] || "#00d4ff",
-            border: `1px solid ${TONE_COLORS[agent.tone] || "#00d4ff"}30`,
+            background: `${TONE_COLORS[agent.tone ?? ""] || "#00d4ff"}15`,
+            color: TONE_COLORS[agent.tone ?? ""] || "#00d4ff",
+            border: `1px solid ${TONE_COLORS[agent.tone ?? ""] || "#00d4ff"}30`,
             fontFamily: "Oxanium",
           }}>
             {agent.tone}

@@ -5,7 +5,7 @@ import path from "path";
 const logger = createLogger();
 const customLogger = {
   ...logger,
-  warn(msg, options) {
+  warn(msg: string, options?: Parameters<typeof logger.warn>[1]) {
     if (typeof msg === "string" && msg.includes("PostCSS plugin") && msg.includes("from")) return;
     logger.warn(msg, options);
   },
