@@ -14,7 +14,7 @@ export function ThreeBackground({ isVoiceActive = false }: { isVoiceActive?: boo
     grid: THREE.LineSegments;
     orbs: THREE.Mesh[];
     pulseRings: THREE.Mesh[];
-    clock: THREE.Clock;
+    startTime: number;
   } | null>(null);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export function ThreeBackground({ isVoiceActive = false }: { isVoiceActive?: boo
     renderer.setClearColor(0x000000, 0);
     mount.appendChild(renderer.domElement);
 
-    const clock = new THREE.Clock();
+    const startTime = performance.now() / 1000;
 
     // Holographic grid floor
     const gridSize = 200;
@@ -153,12 +153,12 @@ export function ThreeBackground({ isVoiceActive = false }: { isVoiceActive?: boo
     };
     window.addEventListener("resize", handleResize);
 
-    sceneRef.current = { renderer, scene, camera, animId: 0, mouseX, mouseY, particles, grid, orbs, pulseRings, clock };
+    sceneRef.current = { renderer, scene, camera, animId: 0, mouseX, mouseY, particles, grid, orbs, pulseRings, startTime };
 
     const animate = () => {
       const id = requestAnimationFrame(animate);
       if (sceneRef.current) sceneRef.current.animId = id;
-      const t = clock.getElapsedTime();
+      const t = performance.now() / 1000 - startTime;
 
       camera.position.x += (mouseX * 8 - camera.position.x) * 0.02;
       camera.position.y += (-mouseY * 4 + 15 - camera.position.y) * 0.02;

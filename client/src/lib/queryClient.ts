@@ -1,7 +1,13 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
-/** Base URL for API requests. Set VITE_API_URL in production (e.g. Railway). */
-export const API_BASE = (import.meta.env.VITE_API_URL as string) ?? "";
+/** Base URL for API requests. Set VITE_API_URL in production (e.g. Railway). Must include https://. */
+function normalizeApiBase(raw: string): string {
+  const s = (raw || "").trim();
+  if (!s) return "";
+  if (s.startsWith("http://") || s.startsWith("https://")) return s;
+  return `https://${s}`;
+}
+export const API_BASE = normalizeApiBase((import.meta.env.VITE_API_URL as string) ?? "");
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
