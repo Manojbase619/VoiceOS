@@ -11,8 +11,9 @@ import { serveStatic } from "./static";
     await setupVite(httpServer, app);
   }
 
-  const PORT = parseInt(process.env.PORT || "5050", 10);
+  const PORT = process.env.PORT || 8080;
+
   httpServer.listen(PORT, "0.0.0.0", () => {
-    log(`serving on port ${PORT}`);
+    log(`Server running on port ${PORT}`);
   });
 })();
