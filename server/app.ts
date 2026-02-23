@@ -1,6 +1,7 @@
 import "dotenv/config";
 
 import express, { type Request, Response, NextFunction } from "express";
+import session from "express-session";
 import { createServer } from "http";
 import type { Server } from "http";
 import type { Express } from "express";
@@ -41,6 +42,15 @@ export async function createApp(): Promise<{ app: Express; httpServer: Server }>
   );
 
   app.use(express.urlencoded({ extended: false }));
+
+  // Memory session (no pg store — Neon HTTP incompatible with pg Pool)
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET ?? "test-secret",
+      resave: false,
+      saveUninitialized: true,
+    })
+  );
 
   // Railway health checks
   app.get("/health", (_, res) => res.status(200).send("OK"));

@@ -1,10 +1,16 @@
-import { pgTable, text, timestamp, integer } from "drizzle-orm/pg-core";
-import { sql } from "drizzle-orm";
+import {
+  pgTable,
+  text,
+  timestamp,
+  integer,
+  uuid
+} from "drizzle-orm/pg-core";
+
+
+// ================= USERS =================
 
 export const users = pgTable("users", {
-  id: text("id")
-    .primaryKey()
-    .default(sql`gen_random_uuid()`),
+  id: uuid("id").defaultRandom().primaryKey(),
 
   email: text("email").notNull(),
 
@@ -17,12 +23,13 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const agents = pgTable("agents", {
-  id: text("id")
-    .primaryKey()
-    .default(sql`gen_random_uuid()`),
 
-  userId: text("user_id").notNull(),
+// ================= AGENTS =================
+
+export const agents = pgTable("agents", {
+  id: uuid("id").defaultRandom().primaryKey(),
+
+  userId: uuid("user_id").notNull(),
 
   agentName: text("agent_name"),
 
@@ -38,17 +45,32 @@ export const agents = pgTable("agents", {
 
   systemPrompt: text("system_prompt"),
 
+  communicationStyle: text("communication_style"),
+
+  domainContext: text("domain_context"),
+
+  conversationRules: text("conversation_rules"),
+
+  riskFlags: text("risk_flags"),
+
+  closingGoal: text("closing_goal"),
+
+  emotionalCalibration: text("emotional_calibration"),
+
+  riskSensitivity: text("risk_sensitivity"),
+
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+
+// ================= SESSIONS =================
+
 export const sessions = pgTable("sessions", {
-  id: text("id")
-    .primaryKey()
-    .default(sql`gen_random_uuid()`),
+  id: uuid("id").defaultRandom().primaryKey(),
 
-  userId: text("user_id").notNull(),
+  userId: uuid("user_id").notNull(),
 
-  agentId: text("agent_id"),
+  agentId: uuid("agent_id"),
 
   phoneNumber: text("phone_number"),
 
@@ -56,7 +78,14 @@ export const sessions = pgTable("sessions", {
 
   durationSeconds: integer("duration_seconds"),
 
+  terminationReason: text("termination_reason"),
+
   startedAt: timestamp("started_at").defaultNow(),
 
   endedAt: timestamp("ended_at"),
 });
+
+export type User = typeof users.$inferSelect;
+export type Agent = typeof agents.$inferSelect;
+export type Session = typeof sessions.$inferSelect;
+export type VoiceSession = Session;

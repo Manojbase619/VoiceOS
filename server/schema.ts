@@ -2,14 +2,15 @@ import {
   pgTable,
   text,
   timestamp,
-  integer
+  integer,
+  uuid
 } from "drizzle-orm/pg-core";
 
 
 // ================= USERS =================
 
 export const users = pgTable("users", {
-  id: text("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),   // ✅ auto id
 
   email: text("email").notNull(),
 
@@ -26,9 +27,9 @@ export const users = pgTable("users", {
 // ================= AGENTS =================
 
 export const agents = pgTable("agents", {
-  id: text("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),   // ✅ auto id
 
-  userId: text("user_id").notNull(),
+  userId: uuid("user_id").notNull(),             // ✅ must match users.id
 
   agentName: text("agent_name"),
 
@@ -51,11 +52,11 @@ export const agents = pgTable("agents", {
 // ================= SESSIONS =================
 
 export const sessions = pgTable("sessions", {
-  id: text("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),   // ✅ auto id
 
-  userId: text("user_id").notNull(),
+  userId: uuid("user_id").notNull(),
 
-  agentId: text("agent_id"),
+  agentId: uuid("agent_id"),
 
   phoneNumber: text("phone_number"),
 
