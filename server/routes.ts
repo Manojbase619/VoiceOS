@@ -34,9 +34,14 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
       return res.json({ user });
 
-    } catch (e: any) {
-      console.error("Signup Error:", e);
-      return res.status(500).json({ message: "Signup failed" });
+    } catch (e: unknown) {
+      const err = e as Error;
+      const msg = err?.message ?? String(e);
+      console.error("Signup Error:", msg, err);
+      return res.status(500).json({
+        message: "Signup failed",
+        error: msg,
+      });
     }
   });
 
