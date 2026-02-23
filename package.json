@@ -5,9 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "NODE_ENV=development tsx server/index.ts",
-    "build": "tsx script/build.ts",
-    "build:vercel": "vite build && cp -r dist/public public",
-    "start": "NODE_ENV=production node dist/index.cjs",
+    "start": "NODE_ENV=production tsx server/index.ts",
     "check": "tsc",
     "db:push": "drizzle-kit push"
   },
@@ -102,13 +100,5 @@
     "tsx": "^4.21.0",
     "typescript": "5.6.3",
     "vite": "^7.3.0"
-  },
-  "overrides": {
-    "drizzle-kit": {
-      "@esbuild-kit/esm-loader": "npm:tsx@^4.20.4"
-    }
-  },
-  "optionalDependencies": {
-    "bufferutil": "^4.0.8"
   }
 }
