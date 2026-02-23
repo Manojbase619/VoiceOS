@@ -1,6 +1,6 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
-/** Same-origin API (Vercel serverless). Use VITE_API_URL only for a different backend (e.g. local dev). */
+/** Production = same-origin /api (Vercel only). Dev = VITE_API_URL if set (e.g. local backend). */
 function normalizeApiBase(raw: string): string {
   const s = (raw || "").trim();
   if (!s) return "";
@@ -8,7 +8,7 @@ function normalizeApiBase(raw: string): string {
   return `https://${s}`;
 }
 const envUrl = (import.meta.env.VITE_API_URL as string) ?? "";
-export const API_BASE = normalizeApiBase(envUrl);
+export const API_BASE = import.meta.env.PROD ? "" : normalizeApiBase(envUrl);
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
