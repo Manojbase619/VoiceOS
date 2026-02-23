@@ -4,6 +4,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { createServer } from "http";
 import type { Server } from "http";
 import type { Express } from "express";
+import cors from "cors";
 import { registerRoutes } from "./routes";
 
 declare module "http" {
@@ -12,35 +13,20 @@ declare module "http" {
   }
 }
 
-export function log(message: string, source = "express") {
-  const formattedTime = new Date().toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
-  });
-  console.log(`${formattedTime} [${source}] ${message}`);
-}
-
 export async function createApp(): Promise<{ app: Express; httpServer: Server }> {
 
   const app = express();
   const httpServer = createServer(app);
 
-  // CORS: must reflect origin when frontend sends credentials (cannot use *)
+  // ✅ HARDCODED CORS HEADERS (EXPRESS 5 SAFE)
   app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    if (origin) {
-      res.setHeader("Access-Control-Allow-Origin", origin);
-      res.setHeader("Access-Control-Allow-Credentials", "true");
-    } else {
-      res.setHeader("Access-Control-Allow-Origin", "*");
-    }
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
 
+    // VERY IMPORTANT → respond to OPTIONS manually
     if (req.method === "OPTIONS") {
-      return res.sendStatus(204);
+      return res.sendStatus(200);
     }
 
     next();
@@ -51,46 +37,16 @@ export async function createApp(): Promise<{ app: Express; httpServer: Server }>
       verify: (req, _res, buf) => {
         req.rawBody = buf;
       },
-    }),
+    })
   );
 
   app.use(express.urlencoded({ extended: false }));
 
-  // 🚨 RAILWAY HEALTHCHECK
-  app.get("/health", (_, res) => {
-    return res.status(200).send("OK");
-  });
+  // Railway health checks
+  app.get("/health", (_, res) => res.status(200).send("OK"));
+  app.get("/", (_, res) => res.status(200).send("OK"));
 
-  app.get("/", (_, res) => {
-    return res.status(200).send("OK");
-  });
-
-  app.use((req, res, next) => {
-    const start = Date.now();
-    const path = req.path;
-    let capturedJsonResponse: Record<string, unknown> | undefined;
-
-    const originalResJson = res.json.bind(res);
-    res.json = function (bodyJson: unknown, ...args: unknown[]) {
-      capturedJsonResponse = bodyJson as Record<string, unknown>;
-      return originalResJson(bodyJson, ...args);
-    };
-
-    res.on("finish", () => {
-      const duration = Date.now() - start;
-      if (path.startsWith("/api")) {
-        let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-        if (capturedJsonResponse) {
-          logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-        }
-        log(logLine);
-      }
-    });
-
-    next();
-  });
-
-  // REGISTER API ROUTES AFTER PREFLIGHT HANDLER
+  // Register API routes
   await registerRoutes(httpServer, app);
 
   app.use((err: unknown, _req: Request, res: Response, next: NextFunction) => {
