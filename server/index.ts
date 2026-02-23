@@ -1,26 +1,14 @@
-import express from "express";
-import { createServer } from "http";
-import { registerRoutes } from "./routes";
+import { createApp, log } from "./app";
 import { serveStatic } from "./static";
 
-const app = express();
-const httpServer = createServer(app);
+(async () => {
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+  const { app, httpServer } = await createApp();
 
-// Railway internal healthcheck
-app.get("/health", (_, res) => {
-  res.status(200).send("OK");
-});
-
-app.get("/", (_, res) => {
-  res.status(200).send("OK");
-});
-
-async function startServer() {
-
-  await registerRoutes(httpServer, app);
+  // 🚨 Railway healthcheck MUST respond on root
+  app.get("/", (_, res) => {
+    res.status(200).send("OK");
+  });
 
   if (process.env.NODE_ENV === "production") {
     serveStatic(app);
@@ -29,15 +17,13 @@ async function startServer() {
     await setupVite(httpServer, app);
   }
 
-  const PORT = process.env.PORT || "5050";
+  const PORT = process.env.PORT || 8080;
 
   httpServer.listen({
     port: Number(PORT),
     host: "0.0.0.0",
   }, () => {
-    console.log(`Server running on port ${PORT}`);
+    log(`Server running on port ${PORT}`);
   });
 
-}
-
-startServer();
+})();
