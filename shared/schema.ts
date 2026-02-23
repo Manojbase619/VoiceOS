@@ -1,13 +1,10 @@
 import { pgTable, text, timestamp, integer } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
-
-// ================= USERS =================
-
 export const users = pgTable("users", {
   id: text("id")
     .primaryKey()
-    .default(sql`gen_random_uuid()`),   // 👈 THIS IS THE FIX
+    .default(sql`gen_random_uuid()`),
 
   email: text("email").notNull(),
 
@@ -19,9 +16,6 @@ export const users = pgTable("users", {
 
   createdAt: timestamp("created_at").defaultNow(),
 });
-
-
-// ================= AGENTS =================
 
 export const agents = pgTable("agents", {
   id: text("id")
@@ -44,25 +38,8 @@ export const agents = pgTable("agents", {
 
   systemPrompt: text("system_prompt"),
 
-  communicationStyle: text("communication_style"),
-
-  domainContext: text("domain_context"),
-
-  conversationRules: text("conversation_rules"),
-
-  riskFlags: text("risk_flags"),
-
-  closingGoal: text("closing_goal"),
-
-  emotionalCalibration: text("emotional_calibration"),
-
-  riskSensitivity: text("risk_sensitivity"),
-
   createdAt: timestamp("created_at").defaultNow(),
 });
-
-
-// ================= SESSIONS =================
 
 export const sessions = pgTable("sessions", {
   id: text("id")
@@ -79,15 +56,7 @@ export const sessions = pgTable("sessions", {
 
   durationSeconds: integer("duration_seconds"),
 
-  terminationReason: text("termination_reason"),
-
   startedAt: timestamp("started_at").defaultNow(),
 
   endedAt: timestamp("ended_at"),
 });
-
-// Inferred types for use in client
-export type User = typeof users.$inferSelect;
-export type Agent = typeof agents.$inferSelect;
-export type Session = typeof sessions.$inferSelect;
-export type VoiceSession = Session;
