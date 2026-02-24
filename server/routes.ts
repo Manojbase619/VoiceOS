@@ -10,8 +10,7 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
 
-  // Path is /auth/signup when run behind Vercel (api/index strips /api prefix)
-  app.post("/auth/signup", async (req, res) => {
+  app.post("/api/auth/signup", async (req, res) => {
     try {
 
       const { email, mobile, countryCode } = req.body;

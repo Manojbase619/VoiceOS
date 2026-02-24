@@ -17,14 +17,6 @@ export async function createApp(): Promise<{ app: Express; httpServer: Server }>
   const app = express();
   const httpServer = createServer(app);
 
-  // Strip /api prefix when behind Vercel rewrite so routes can be registered as /health, /auth/signup
-  app.use((req, _res, next) => {
-    if (typeof req.url === "string" && req.url.startsWith("/api")) {
-      req.url = req.url === "/api" ? "/" : req.url.slice(4);
-    }
-    next();
-  });
-
   // CORS headers
   app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");

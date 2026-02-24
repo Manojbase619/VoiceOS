@@ -91,25 +91,33 @@ Pre-seeded with:
 Login with: `admin@basethesis.ai` (any mobile number, country code +91)
 Regular user: `rajesh.kumar@example.com`
 
-## Deploy to Vercel
+## Deploy: Vercel (frontend) + Railway (backend)
 
-1. **Connect the repo**  
-   Go to [vercel.com](https://vercel.com) → New Project → Import your Git repository.
+- **Vercel** serves the static frontend only (no serverless API).
+- **Railway** runs the Express API. Set `VITE_API_URL` on Vercel to your Railway API URL so the frontend calls the right backend.
 
-2. **Configure build**  
-   - **Build Command:** `npm run build:vercel` (already set in `vercel.json`)  
-   - **Output Directory:** `public`  
-   - **Install Command:** `npm install`  
-   - **Start Command:** leave **empty**. Do not set `npm start` — Vercel runs the root `index.ts` Express app as a serverless function. Using a start command will start a container and is for Railway, not Vercel.
+### 1. Deploy backend to Railway
 
-3. **Environment variables**  
-   In the Vercel project → Settings → Environment Variables, add:
-   - `VITE_API_URL` — Backend API base URL (e.g. `https://voiceos-production.up.railway.app` if the API runs on Railway). Omit or leave empty if the frontend is served from the same origin as the API.
-   - `DATABASE_URL` — PostgreSQL connection string (e.g. Neon)
-   - `ULTRAVOX_API_KEY` — For voice sessions (if you use Ultravox)
+1. Go to [railway.app](https://railway.app) → New Project → **Deploy from GitHub repo** and select this repo.
+2. **Settings** (or **Variables**):
+   - **Root Directory:** leave default (repo root).
+   - **Build Command:** leave empty or `npm install`.
+   - **Start Command:** `npm start` (runs `tsx server/index.ts`).
+   - **Environment variables:** add:
+     - `DATABASE_URL` — PostgreSQL connection string (e.g. Neon).
+     - `ULTRAVOX_API_KEY` — If you use voice/Ultravox.
+   - Railway sets `PORT` and `NODE_ENV=production` automatically. Do **not** set `VERCEL` (so the server listens).
+3. Deploy. Copy the public URL (e.g. `https://your-app.up.railway.app`). This is your **API base URL**.
+4. Run migrations against the same DB: `npm run db:push` (with `DATABASE_URL` in `.env` locally or in Railway).
 
-4. **Database**  
-   Ensure your PostgreSQL DB (e.g. Neon) is reachable from the internet and run migrations (e.g. `npm run db:push`) against the production DB before or after first deploy.
+### 2. Deploy frontend to Vercel
 
-5. **Deploy**  
-   Push to your main branch or click Deploy. The app will be served from the root; static assets come from `public/` and API routes from the Express app (root `index.ts`).
+1. [vercel.com](https://vercel.com) → New Project → Import your Git repository.
+2. **Build:** use `vercel.json` defaults: Build Command `npm run build:vercel`, Output Directory `public`. Leave **Start Command** empty.
+3. **Environment variables** (Vercel project → Settings → Environment Variables):
+   - `VITE_API_URL` — Your Railway API URL (e.g. `https://your-app.up.railway.app`). **Required** so the frontend calls the backend.
+4. Deploy. The site will be static; all API requests go to the URL in `VITE_API_URL`.
+
+### 3. CORS
+
+The Express app allows `Access-Control-Allow-Origin: *`. For production you can restrict this to your Vercel domain in `server/app.ts` if you prefer.

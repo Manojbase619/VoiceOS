@@ -1,6 +1,5 @@
 {
   "buildCommand": "npm run build:vercel",
   "outputDirectory": "public",
-  "framework": "vite",
-  "rewrites": [{ "source": "/api/:path*", "destination": "/api" }]
+  "framework": "vite"
 }

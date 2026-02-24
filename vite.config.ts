@@ -53,5 +53,12 @@ export default defineConfig({
       strict: true,
       deny: ["**/.*"],
     },
+    // Proxy /api/* to backend (e.g. Express on port 8080) so fetch("/api/...") works without CORS
+    proxy: {
+      "/api": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
+    },
   },
 });

@@ -1,0 +1,3 @@
+# Backend API: Express server (no Vercel serverless)
+[deploy]
+startCommand = "npm start"
