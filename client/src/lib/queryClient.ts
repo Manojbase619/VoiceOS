@@ -1,15 +1,20 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
-/** Prod = VITE_API_URL (Railway backend). Dev = VITE_API_URL or local. */
+/**
+ * API base URL. Vite inlines env at BUILD TIME — not runtime.
+ * Set VITE_API_URL in Vercel (e.g. https://your-backend.up.railway.app), then
+ * redeploy so the built JS gets the value. Without it, API_BASE is "" and
+ * requests hit the Vercel origin → 404 (no API on Vercel).
+ */
 function normalizeApiBase(raw: string): string {
   const s = (raw || "").trim();
   if (!s) return "";
   if (s.startsWith("http://") || s.startsWith("https://")) return s;
   return `https://${s}`;
 }
+
 const envUrl = (import.meta.env.VITE_API_URL as string) ?? "";
-export const API_BASE =
-  import.meta.env.PROD ? normalizeApiBase(envUrl) : normalizeApiBase(envUrl);
+export const API_BASE = normalizeApiBase(envUrl);
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -18,6 +23,7 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+/** Generic POST/PUT/DELETE helper */
 export async function apiRequest(
   method: string,
   url: string,
@@ -27,7 +33,6 @@ export async function apiRequest(
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
     body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
   });
 
   await throwIfResNotOk(res);
@@ -35,15 +40,15 @@ export async function apiRequest(
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
+
+/** React Query GET helper */
 export const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
     const path = queryKey.join("/") as string;
-    const res = await fetch(`${API_BASE}${path}`, {
-      credentials: "include",
-    });
+    const res = await fetch(`${API_BASE}${path}`);
 
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
       return null;

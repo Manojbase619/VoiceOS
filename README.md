@@ -116,8 +116,18 @@ Regular user: `rajesh.kumar@example.com`
 2. **Build:** use `vercel.json` defaults: Build Command `npm run build:vercel`, Output Directory `public`. Leave **Start Command** empty.
 3. **Environment variables** (Vercel project → Settings → Environment Variables):
    - `VITE_API_URL` — Your Railway API URL (e.g. `https://your-app.up.railway.app`). **Required** so the frontend calls the backend.
-4. Deploy. The site will be static; all API requests go to the URL in `VITE_API_URL`.
+4. **Important:** Vite bakes `VITE_API_URL` into the bundle at **build time**. After adding or changing it, you **must redeploy** (e.g. `vercel --prod` or trigger a new deployment). Then hard-refresh the site (⌘+Shift+R / Ctrl+Shift+R) so the browser loads the new JS. Otherwise requests stay on the Vercel origin and `/api/*` returns 404.
+5. Deploy. The site will be static; all API requests go to the URL in `VITE_API_URL`.
 
 ### 3. CORS
 
 The Express app allows `Access-Control-Allow-Origin: *`. For production you can restrict this to your Vercel domain in `server/app.ts` if you prefer.
+
+### 4. Login / "Connection Error" checklist
+
+If INITIALIZE shows "Connection Error" or "Neural link disrupted":
+
+1. **Vercel** — Settings → Environment Variables: `VITE_API_URL` = your Railway API URL (e.g. `https://your-app.up.railway.app`). No trailing slash. Save, then **redeploy** (Deployments → ⋮ → Redeploy). Hard-refresh the site (⌘+Shift+R).
+2. **Railway** — Variables: `DATABASE_URL` set (e.g. Neon connection string). Service is running and the deploy succeeded.
+3. **DB** — `npm run db:push` has been run against the same `DATABASE_URL` so the `users` table exists.
+4. **Network** — In browser DevTools → Network, click INITIALIZE and check the request: URL should be `https://your-railway-url.up.railway.app/api/auth/signup`, not `voice-os-xi.vercel.app/api/...`. If it’s the Vercel URL, the build didn’t get `VITE_API_URL`; redeploy after setting the env.
