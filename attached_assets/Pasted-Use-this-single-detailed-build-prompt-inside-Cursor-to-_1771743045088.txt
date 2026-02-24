@@ -1,4 +1,4 @@
-Use this **single detailed build prompt** inside Cursor to generate your full rustic, cinematic, 3D-rendered Voice Agent Platform with OpenAI-powered prompt generation and rephrasing layer.
+hUse this **single detailed build prompt** inside Cursor to generate your full rustic, cinematic, 3D-rendered Voice Agent Platform with OpenAI-powered prompt generation and rephrasing layer.
 
 ---
 
